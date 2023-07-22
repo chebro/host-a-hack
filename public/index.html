@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host a Hack!</title>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js" integrity="sha512-y3o0Z5TJF1UsKjs/jS2CDkeHN538bWsftxO9nctODL5W40nyXIbs0Pgyu7//icrQY9m6475gLaVr39i/uh/nLA==" crossorigin="anonymous"></script>
+
+    <h1>Upload your project!</h1>
+    <form id="zip-form">
+        <input id="zip-upload" type="file" webkitdirectory mozdirectory>
+        <button type="submit">
+            Upload folder 
+        </button>
+    </form>
+    <p id="statusMessage"></p>
+
+    <script>
+        folder = document.getElementById("zip-upload")
+        const zip = new JSZip();
+        folder.addEventListener("change", e => {
+            let files = e.target.files;
+            if (files.length > 0) {
+                console.log(files);
+                for (file in files) {
+                    zip.file(file.webkitRelativePath, file, { binary: true });
+                }
+            } else {
+                document.getElementById('statusMessage').innerText = "No files selected"
+            }
+    })
+    document.getElementById('zip-form').addEventListener('submit', e => {
+        e.preventDefault()
+        zip.generateAsync({ type: 'blob' })
+            .then(blob => {
+                const formData = new FormData()
+                formData.append('folder', blob, 'upload.zip')
+
+                fetch('/api/folder', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('statusMessage').innerText = data.message
+            })
+            .catch(error => {
+                document.getElementById('statusMessage').innerText = 'Error uploading folder.'
+            })
+        })
+        .catch(error => {
+            document.getElementById('statusMessage').innerText = 'Error zipping folder.'
+        })
+    })
+  </script>
+</body>
+</html>

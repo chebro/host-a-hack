@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	folderRoutes "github.com/chebro/host-a-hack/internals/routes"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -131,9 +132,8 @@ func main() {
 		app.Shutdown()
 	}()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-	app.Listen(":3000")
-
+  app.Static("/", "./public")
+  api := app.Group("api")
+  folderRoutes.FolderRoutes(api)
+  app.Listen(":3000")
 }
