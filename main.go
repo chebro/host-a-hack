@@ -6,9 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	folderRoutes "github.com/chebro/host-a-hack/internals/routes"
 	"github.com/gofiber/fiber/v2"
 )
+
+var pool ContainerPool
 
 func main() {
 	pool := NewContainerPool(3)
@@ -27,7 +28,6 @@ func main() {
 	}()
 
 	app.Static("/", "./public")
-	api := app.Group("api")
-	folderRoutes.FolderRoutes(api)
+  app.Route("/", SetupRoutes)
 	app.Listen(":3000")
 }

@@ -13,6 +13,7 @@ import (
 type ContainerInfo struct {
 	id   string
 	port int
+  session string
 }
 
 func CreateContainer() *ContainerInfo {
