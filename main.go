@@ -9,10 +9,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var pool ContainerPool
+var pool = NewContainerPool(3)
 
 func main() {
-	pool := NewContainerPool(3)
 	defer pool.DisposeContainerPool()
 
 	fmt.Print(pool.size)
@@ -28,6 +27,6 @@ func main() {
 	}()
 
 	app.Static("/", "./public")
-  app.Route("/", SetupRoutes)
+	app.Route("/", SetupRoutes)
 	app.Listen(":3000")
 }

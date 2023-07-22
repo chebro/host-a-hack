@@ -11,9 +11,9 @@ import (
 )
 
 type ContainerInfo struct {
-	id   string
-	port int
-  session string
+	id      string
+	port    int
+	session string
 }
 
 func CreateContainer() *ContainerInfo {
@@ -47,14 +47,12 @@ type ContainerPool struct {
 
 func NewContainerPool(size int) *ContainerPool {
 	pool := &ContainerPool{
-		items:     make([]*ContainerInfo, size),
-		available: make([]*ContainerInfo, size),
+		items:     []*ContainerInfo{},
+		available: []*ContainerInfo{},
 		size:      size,
 	}
 
 	pool.AddContainers(size)
-
-	ReloadNginx()
 
 	return pool
 }
@@ -80,7 +78,10 @@ func (pool *ContainerPool) AddContainers(count int) {
 		container := CreateContainer()
 		pool.items = append(pool.items, container)
 		pool.available = append(pool.available, container)
+		fmt.Println("Container added " + container.id)
 	}
+
+	ReloadNginx()
 }
 
 func (pool *ContainerPool) GetOne() *ContainerInfo {
@@ -95,5 +96,18 @@ func (pool *ContainerPool) GetOne() *ContainerInfo {
 	}
 
 	pool.mutex.Unlock()
+	return nil
+}
+
+func (pool *ContainerPool) GetContainerById(container_id string) *ContainerInfo {
+	pool.mutex.Lock()
+	defer pool.mutex.Unlock()
+
+	for _, container := range pool.items {
+		if container.id == container_id {
+			return container
+		}
+	}
+
 	return nil
 }
