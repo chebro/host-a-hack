@@ -32,6 +32,13 @@
         grid-template-columns: minmax(max-content, 1fr) 600px;
         row-gap: 5vh;
         column-gap: 25px;
+        background: linear-gradient(
+          to right,
+          transparent 0%,
+          white 20%,
+          white 80%,
+          transparent 100%
+        );
       }
 
       div.intro {
@@ -56,6 +63,7 @@
         font-weight: 800;
 
         padding: 2rem 0;
+        display: inline-block;
       }
 
       p.description {
@@ -70,6 +78,7 @@
         font-weight: 800;
         grid-column-start: 1;
         text-align: right;
+        justify-self: end;
       }
 
       div.num-1 {
@@ -83,6 +92,7 @@
       div.num-3 {
         grid-row-start: 4;
         display: flex;
+        align-items: flex-end;
         flex-direction: column;
       }
 
@@ -155,9 +165,9 @@
       </div>
       <div class="number num-1 gradtext">1</div>
       <div class="number num-2 gradtext">2</div>
-      <div class="number num-3 gradtext">
-        <div>3</div>
-        <div class="optional">(Optional)</div>
+      <div class="number num-3">
+        <div class="gradtext">3</div>
+        <div class="optional gradtext">(Optional)</div>
       </div>
       <div class="step-1">
         <form id="zip-form">
@@ -219,6 +229,24 @@
             document.getElementById("statusMessage").innerText =
               "Error zipping folder.";
           });
+      });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
+    <script>
+      VANTA.BIRDS({
+        el: "body",
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.0,
+        minWidth: 200.0,
+        scale: 1.0,
+        scaleMobile: 1.0,
+        backgroundColor: 0xffffff,
+        color1: 0xff512f,
+        color2: 0xdd2476,
+        quantity: 3.0,
       });
     </script>
   </body>
