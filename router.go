@@ -8,6 +8,7 @@ func SetupRoutes (router fiber.Router) {
 	api := router.Group("/api")
   LandingRoutes(api)
   FolderRoutes(api)
+  TtydRoutes(api)
 }
 
 func LandingRoutes (router fiber.Router) {
