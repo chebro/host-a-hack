@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type ContainerInfo struct {
@@ -37,18 +38,22 @@ func CreateContainer() *ContainerInfo {
 }
 
 type ContainerPool struct {
-	items []ContainerInfo
-	size  int
+	items     []ContainerInfo
+	available []*ContainerInfo
+	size      int
+	mutex     sync.Mutex
 }
 
 func NewContainerPool(size int) *ContainerPool {
 	pool := &ContainerPool{
-		items: make([]ContainerInfo, size),
-		size:  size,
+		items:     make([]ContainerInfo, size),
+		available: make([]*ContainerInfo, size),
+		size:      size,
 	}
 
 	for i := 0; i < size; i++ {
 		pool.items[i] = *CreateContainer()
+		pool.available[i] = &pool.items[i]
 		fmt.Println(pool.items[i].id)
 	}
 
@@ -58,11 +63,27 @@ func NewContainerPool(size int) *ContainerPool {
 }
 
 func (pool *ContainerPool) DisposeContainerPool() {
+	pool.mutex.Lock()
+	defer pool.mutex.Unlock()
+
 	args := []string{"stop"}
-	for _, item := range pool.items {
-		os.Remove(item.NginxConfPath())
-		args = append(args, item.id)
+	for _, container := range pool.items {
+		os.Remove(container.NginxConfPath())
+		args = append(args, container.id)
 	}
 
 	exec.Command("docker", args...).Run()
+}
+
+func (pool *ContainerPool) GetOne() *ContainerInfo {
+	pool.mutex.Lock()
+	defer pool.mutex.Unlock()
+
+	if len(pool.available) > 0 {
+		container := pool.available[0]
+		pool.available = pool.available[1:]
+		return container
+	}
+
+	return nil
 }
