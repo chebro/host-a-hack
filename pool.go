@@ -38,7 +38,7 @@ func CreateContainer() *ContainerInfo {
 }
 
 type ContainerPool struct {
-	items     []ContainerInfo
+	items     []*ContainerInfo
 	available []*ContainerInfo
 	size      int
 	mutex     sync.Mutex
@@ -46,16 +46,12 @@ type ContainerPool struct {
 
 func NewContainerPool(size int) *ContainerPool {
 	pool := &ContainerPool{
-		items:     make([]ContainerInfo, size),
+		items:     make([]*ContainerInfo, size),
 		available: make([]*ContainerInfo, size),
 		size:      size,
 	}
 
-	for i := 0; i < size; i++ {
-		pool.items[i] = *CreateContainer()
-		pool.available[i] = &pool.items[i]
-		fmt.Println(pool.items[i].id)
-	}
+	pool.AddContainers(size)
 
 	ReloadNginx()
 
@@ -75,15 +71,28 @@ func (pool *ContainerPool) DisposeContainerPool() {
 	exec.Command("docker", args...).Run()
 }
 
-func (pool *ContainerPool) GetOne() *ContainerInfo {
+func (pool *ContainerPool) AddContainers(count int) {
 	pool.mutex.Lock()
 	defer pool.mutex.Unlock()
+
+	for i := 1; i <= count; i++ {
+		container := CreateContainer()
+		pool.items = append(pool.items, container)
+		pool.available = append(pool.available, container)
+	}
+}
+
+func (pool *ContainerPool) GetOne() *ContainerInfo {
+	pool.mutex.Lock()
 
 	if len(pool.available) > 0 {
 		container := pool.available[0]
 		pool.available = pool.available[1:]
+		pool.mutex.Unlock()
+		go pool.AddContainers(1)
 		return container
 	}
 
+	pool.mutex.Unlock()
 	return nil
 }
