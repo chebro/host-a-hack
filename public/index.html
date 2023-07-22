@@ -1,59 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Host a Hack!</title>
-</head>
-<body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js" integrity="sha512-y3o0Z5TJF1UsKjs/jS2CDkeHN538bWsftxO9nctODL5W40nyXIbs0Pgyu7//icrQY9m6475gLaVr39i/uh/nLA==" crossorigin="anonymous"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-    <h1>Upload your project!</h1>
-    <form id="zip-form">
-        <input id="zip-upload" type="file" webkitdirectory mozdirectory>
-        <button type="submit">
-            Upload folder 
-        </button>
-    </form>
-    <p id="statusMessage"></p>
+      html,
+      body {
+        margin: 0;
+        min-height: 100vh;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        font-family: Inter;
+        align-items: flex-start;
+      }
+
+      div.main-container {
+        padding-top: 7vh;
+        display: grid;
+        grid-template-columns: minmax(max-content, 1fr) 600px;
+        row-gap: 5vh;
+        column-gap: 25px;
+      }
+
+      div.intro {
+        grid-column-start: 2;
+        grid-row-start: 1;
+      }
+
+      p,
+      h1 {
+        margin: 0;
+      }
+
+      .gradtext {
+        background: linear-gradient(90deg, #ff512f 0%, #dd2476 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      h1.title {
+        font-size: 32px;
+        font-weight: 800;
+
+        padding: 2rem 0;
+      }
+
+      p.description {
+        color: #555;
+        font-size: 21px;
+        font-weight: 500;
+        line-height: 33px;
+      }
+
+      div.number {
+        font-size: 32px;
+        font-weight: 800;
+        grid-column-start: 1;
+        text-align: right;
+      }
+
+      div.num-1 {
+        grid-row-start: 2;
+      }
+
+      div.num-2 {
+        grid-row-start: 3;
+      }
+
+      div.num-3 {
+        grid-row-start: 4;
+        display: flex;
+        flex-direction: column;
+      }
+
+      div.num-3 .optional {
+        font-size: 16px;
+      }
+
+      div.step-1 {
+        grid-column-start: 2;
+        grid-row-start: 2;
+      }
+      div.step-2 {
+        grid-column-start: 2;
+        grid-row-start: 3;
+      }
+
+      div.terminal {
+        width: 100%;
+        background-color: #2b2b2b;
+        overflow: hidden;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      div.terminal .row {
+        display: flex;
+        padding: 17px 20px 12px;
+        gap: 9px;
+      }
+
+      div.terminal .row .circle {
+        border-radius: 50%;
+        width: 12px;
+        height: 12px;
+      }
+
+      div.terminal .row .circle.red {
+        background-color: #ff5f59;
+      }
+
+      div.terminal .row .circle.yellow {
+        background-color: #ffbc2d;
+      }
+
+      div.terminal .row .circle.green {
+        background-color: #27c940;
+      }
+
+      div.terminal iframe {
+        width: 100%;
+        margin-left: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"
+      integrity="sha512-y3o0Z5TJF1UsKjs/jS2CDkeHN538bWsftxO9nctODL5W40nyXIbs0Pgyu7//icrQY9m6475gLaVr39i/uh/nLA=="
+      crossorigin="anonymous"
+    ></script>
+
+    <div class="main-container">
+      <div class="intro">
+        <h1 class="title gradtext">Host a Hack</h1>
+        <p class="description">
+          Finished your hack and want to host it? Use our service to stage your
+          hack and learn to deploy it to production.
+        </p>
+      </div>
+      <div class="number num-1 gradtext">1</div>
+      <div class="number num-2 gradtext">2</div>
+      <div class="number num-3 gradtext">
+        <div>3</div>
+        <div class="optional">(Optional)</div>
+      </div>
+      <div class="step-1">
+        <form id="zip-form">
+          <input id="zip-upload" type="file" webkitdirectory mozdirectory />
+          <button type="submit">Upload folder</button>
+        </form>
+        <p id="statusMessage"></p>
+      </div>
+      <div class="step-2">
+        <div class="terminal">
+          <div class="row">
+            <div class="circle red"></div>
+            <div class="circle yellow"></div>
+            <div class="circle green"></div>
+          </div>
+          <iframe src="/api/ttyd" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
 
     <script>
-        folder = document.getElementById("zip-upload")
-        const zip = new JSZip();
-        folder.addEventListener("change", e => {
-            let files = e.target.files;
-            if (files.length > 0) {
-                console.log(files);
-                for (file in files) {
-                    zip.file(file.webkitRelativePath, file, { binary: true });
-                }
-            } else {
-                document.getElementById('statusMessage').innerText = "No files selected"
-            }
-    })
-    document.getElementById('zip-form').addEventListener('submit', e => {
-        e.preventDefault()
-        zip.generateAsync({ type: 'blob' })
-            .then(blob => {
-                const formData = new FormData()
-                formData.append('folder', blob, 'upload.zip')
+      folder = document.getElementById("zip-upload");
+      const zip = new JSZip();
+      folder.addEventListener("change", (e) => {
+        let files = e.target.files;
+        if (files.length > 0) {
+          console.log(files);
+          for (file in files) {
+            zip.file(file.webkitRelativePath, file, { binary: true });
+          }
+        } else {
+          document.getElementById("statusMessage").innerText =
+            "No files selected";
+        }
+      });
+      document.getElementById("zip-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        zip
+          .generateAsync({ type: "blob" })
+          .then((blob) => {
+            const formData = new FormData();
+            formData.append("folder", blob, "upload.zip");
 
-                fetch('/api/folder', {
-                method: 'POST',
-                body: formData
+            fetch("/api/folder", {
+              method: "POST",
+              body: formData,
             })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('statusMessage').innerText = data.message
-            })
-            .catch(error => {
-                document.getElementById('statusMessage').innerText = 'Error uploading folder.'
-            })
-        })
-        .catch(error => {
-            document.getElementById('statusMessage').innerText = 'Error zipping folder.'
-        })
-    })
-  </script>
-</body>
+              .then((response) => response.json())
+              .then((data) => {
+                document.getElementById("statusMessage").innerText =
+                  data.message;
+              })
+              .catch((error) => {
+                document.getElementById("statusMessage").innerText =
+                  "Error uploading folder.";
+              });
+          })
+          .catch((error) => {
+            document.getElementById("statusMessage").innerText =
+              "Error zipping folder.";
+          });
+      });
+    </script>
+  </body>
 </html>
