@@ -4,7 +4,7 @@ A Hassle free hosting solution for your hackathon projects!
 
 - Project link: [https://github.com/chebro/host-a-hack](https://github.com/chebro/host-a-hack).
 - Live demo: [https://hostahack.xyz](https://hostahack.xyz)
-- YouTube video: [https://youtube.com/v](https://youtube.com/v)
+- YouTube video: [https://youtu.be/9hZKEFFo7jw](https://youtu.be/9hZKEFFo7jw)
 
 ## Inspiration
 
