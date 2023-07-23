@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func WriteStringToFile(filename, content string) error {
@@ -21,5 +24,19 @@ func WriteStringToFile(filename, content string) error {
 		return err
 	}
 
+	return nil
+}
+
+func CopyFolderToContainer(c *fiber.Ctx, savePath string) error {
+	store, err := Store.Get(c)
+	if err != nil {
+		return err
+	}
+	container_id := store.Get("container_id").(string)
+	containerPath := fmt.Sprintf("%s:/root", container_id)
+	err = exec.Command("docker", "cp", savePath, containerPath).Run()
+	if err != nil {
+		return err
+	}
 	return nil
 }

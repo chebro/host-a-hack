@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
-  "io"
+	"os/exec"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,22 +18,35 @@ func GetLanding(c *fiber.Ctx) error {
 }
 
 func PostFolder(c *fiber.Ctx) error {
-	fmt.Sprintln("hi")
-  form, err := c.MultipartForm()
-  if err != nil {
-    return c.Status(fiber.StatusInternalServerError).SendString("Failed to parse form")
-  }
-  files := form.File["folder"]
-  file, err := files[0].Open()
-  defer file.Close()
-  fmt.Println(file)
-  savePath := "./uploads/upload.zip"
-  dst, err := os.Create(savePath)
-  defer dst.Close()
-  f, err := io.Copy(dst, file)
-  fmt.Println(f)
-	return c.JSON(fiber.Map{"status": "success", "message": "uploaded folder"})
+	store, err := Store.Get(c)
+	if err != nil {
+		panic(err)
+	}
 
+	form, err := c.MultipartForm()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": "Failed to parse form"})
+	}
+
+	file, err := form.File["folder"][0].Open()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": "Failed to read folder"})
+	}
+	defer file.Close()
+
+	savePath := fmt.Sprintf("./uploads/%s", store.ID())
+	dst, err := os.Create(savePath)
+	defer dst.Close()
+
+	_, err = io.Copy(dst, file)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": "Failed to copy zip file contents"})
+	}
+	err = CopyFolderToContainer(c, savePath)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": "Failed to upload to container"})
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Sucessfully uploaded folder"})
 }
 
 func GetTtyd(c *fiber.Ctx) error {
