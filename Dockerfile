@@ -5,5 +5,9 @@ RUN apk update \
  && python -m pip install requests httpx
 
 COPY entrypoint.py /tmp/entrypoint.py
+COPY examples /root/project
+
+RUN cd /root/project \
+ && npm install express --save
 
 CMD ["python", "/tmp/entrypoint.py"]
