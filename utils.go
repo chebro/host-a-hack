@@ -38,7 +38,8 @@ func CopyFolderToContainer(c *fiber.Ctx, savePath string) error {
 	if err != nil {
 		return err
 	}
-	err = exec.Command("docker", "exec", container_id, "unzip", containerPath).Run()
-	err = exec.Command("docker", "exec", container_id, "rm", containerPath).Run()
+	filePath := fmt.Sprintf("/root/%s.zip", store.ID())
+	err = exec.Command("docker", "exec", container_id, "unzip", filePath).Run()
+	err = exec.Command("docker", "exec", container_id, "rm", filePath).Run()
 	return nil
 }
