@@ -149,12 +149,6 @@
     </style>
   </head>
   <body>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"
-      integrity="sha512-y3o0Z5TJF1UsKjs/jS2CDkeHN538bWsftxO9nctODL5W40nyXIbs0Pgyu7//icrQY9m6475gLaVr39i/uh/nLA=="
-      crossorigin="anonymous"
-    ></script>
-
     <div class="main-container">
       <div class="intro">
         <h1 class="title gradtext">Host a Hack</h1>
@@ -188,25 +182,34 @@
       </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@zip.js/zip.js@2.7.20/dist/zip.min.js"></script>
     <script>
       folder = document.getElementById("zip-upload");
-      const zip = new JSZip();
-      folder.addEventListener("change", (e) => {
+      let blobWriter;
+      folder.addEventListener("change", async (e) => {
+        blobWriter = new zip.BlobWriter("application/zip");
+        const zipWriter = new zip.ZipWriter(blobWriter, {
+          bufferedWrite: true,
+          useCompressionStream: false,
+        });
         let files = e.target.files;
         if (files.length > 0) {
           console.log(files);
-          for (file in files) {
-            zip.file(file.webkitRelativePath, file, { binary: true });
-          }
+          await Promise.all(
+            Array.from(files).map((file) =>
+              zipWriter.add(file.webkitRelativePath, new zip.BlobReader(file))
+            )
+          );
         } else {
           document.getElementById("statusMessage").innerText =
             "No files selected";
         }
+        await zipWriter.close();
       });
       document.getElementById("zip-form").addEventListener("submit", (e) => {
         e.preventDefault();
-        zip
-          .generateAsync({ type: "blob" })
+        blobWriter
+          .getData()
           .then((blob) => {
             const formData = new FormData();
             formData.append("folder", blob, "upload.zip");
