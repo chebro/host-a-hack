@@ -15,7 +15,9 @@ var pool *ContainerPool
 
 func main() {
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 100 * 1024 * 1024,
+	})
 
 	go func() {
 		sigchan := make(chan os.Signal, 1)
