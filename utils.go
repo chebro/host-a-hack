@@ -58,12 +58,12 @@ func CopyFolderToContainer(c *fiber.Ctx, savePath string) error {
 	return nil
 }
 
-func SaveWebLinkConfig(link string, ip string, port string, filename string) {
+func SaveWebLinkConfig(link string, ip string, port string, filename string) string {
 	webLink := fmt.Sprintf("%s.hostahack.xyz", link)
 	config := fmt.Sprintf(`
 server {
 	listen          80;
-	server_name     hostahack.xyz;
+	server_name     %s;
 	return 301      https://%s$request_uri;
 }
 server {
@@ -86,11 +86,11 @@ server {
                 proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header        Upgrade $http_upgrade;
                 proxy_set_header        Connection "upgrade";
-                proxy_pass              %s:%s;
+                proxy_pass              http://%s:%s;
                 proxy_read_timeout      90;
 	}
 }
-    `, webLink, webLink, ip, port)
+    `, webLink, webLink, webLink, ip, port)
 
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
@@ -102,4 +102,5 @@ server {
 	if _, err = f.WriteString(config); err != nil {
 		panic(err)
 	}
+	return webLink
 }

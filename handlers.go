@@ -92,7 +92,9 @@ func PortReportHandler(ctx *fiber.Ctx) error {
 
 	container.open_ports = payload.OpenPorts
 
-	// Generate config
+	portMap := container.GenerateWebLinkConfig()
+
+	fmt.Println(portMap)
 
 	return ctx.JSON(fiber.Map{"status": "success"})
 }
