@@ -50,7 +50,7 @@ func (container *ContainerInfo) GenerateWebLinkConfig() map[int]string {
 
 		// for each port append the config to a file
 		for _, port := range container.open_ports {
-			link := sha256.Sum256([]byte(container.id + strconv.Itoa(port)))
+			link := sha256.Sum256([]byte(container.session + strconv.Itoa(port)))
 			short := hex.EncodeToString(link[:5])
 			portMap[port] = SaveWebLinkConfig(short, container.ip, strconv.Itoa(port), container.WebLinkConfPath())
 		}

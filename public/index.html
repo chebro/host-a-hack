@@ -24,10 +24,11 @@
         justify-content: center;
         font-family: Inter;
         align-items: flex-start;
+        overflow-y: scroll;
       }
 
       div.main-container {
-        padding-top: 7vh;
+        padding-top: 5vh;
         display: grid;
         grid-template-columns: minmax(max-content, 1fr) 600px;
         row-gap: 5vh;
@@ -272,6 +273,18 @@
       .dropdown:hover .dropbtn {
         background-color: #3e8e41;
       }
+      .port-guide {
+        color: #444;
+        font-size: 14px;
+        padding-top: 7px;
+      }
+      .port-guide a {
+        color: #ff512f;
+        opacity: 0.9;
+      }
+      .port-guide a:hover {
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
@@ -313,6 +326,15 @@
           </div>
           <iframe src="/api/ttyd" frameborder="0"></iframe>
         </div>
+        <p class="port-guide">
+          Opened a port? Visit it by clicking the links below:
+          <a href="#">80</a>
+          <a href="#">443</a>
+          <a href="#">3000</a>
+          <a href="#">5000</a>
+          <a href="#">8000</a>
+          <a href="#">8080</a>
+        </p>
       </div>
 
       <div class="step-3 dropdown">
@@ -383,6 +405,37 @@
         color2: 0xdd2476,
         quantity: 3.0,
       });
+
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+      };
+
+      const generateHash = async (text) => {
+        console.log(text);
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+
+        // Convert the hash buffer to a hexadecimal string
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray
+          .map((byte) => byte.toString(16).padStart(2, "0"))
+          .join("");
+      };
+
+      const populateLinks = () => {
+        const sessionId = getCookie("session_id");
+        console.log(sessionId);
+        document.querySelectorAll(".port-guide a").forEach(async (elem) => {
+          const hash = await generateHash(sessionId + elem.innerText.trim());
+          console.log(elem, hash);
+          elem.href = `http://${hash.substring(0, 10)}.hostahack.xyz/`;
+        });
+      };
+      setTimeout(populateLinks, 4444);
     </script>
   </body>
 </html>
