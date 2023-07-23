@@ -14,8 +14,6 @@ var pool = NewContainerPool(3)
 func main() {
 	defer pool.DisposeContainerPool()
 
-	fmt.Print(pool.size)
-
 	app := fiber.New()
 
 	go func() {
@@ -28,5 +26,8 @@ func main() {
 
 	app.Static("/", "./public")
 	app.Route("/", SetupRoutes)
-	app.Listen(":3000")
+	err := app.Listen(":3000")
+	if err != nil {
+		fmt.Println(err)
+	}
 }

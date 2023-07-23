@@ -20,7 +20,7 @@ func CreateContainer() *ContainerInfo {
 	const min_port = 30000
 	const max_port = 60000
 	port := rand.Intn(max_port-min_port) + min_port
-	cmd := exec.Command("docker", "run", "-d", "--rm", "-p", strconv.Itoa(port)+":7681", "tsl0922/ttyd:alpine")
+	cmd := exec.Command("docker", "run", "-d", "--rm", "-p", strconv.Itoa(port)+":7681", "hostahack:latest")
 	stdout, err := cmd.Output()
 
 	if err != nil {
@@ -67,7 +67,11 @@ func (pool *ContainerPool) DisposeContainerPool() {
 		args = append(args, container.id)
 	}
 
-	exec.Command("docker", args...).Run()
+	fmt.Println("Stopping containers:")
+	out, err := exec.Command("docker", args...).Output()
+	if err == nil {
+		fmt.Println(string(out))
+	}
 }
 
 func (pool *ContainerPool) AddContainers(count int) {
