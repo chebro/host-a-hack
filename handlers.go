@@ -17,18 +17,22 @@ func GetLanding(c *fiber.Ctx) error {
 }
 
 func PostFolder(c *fiber.Ctx) error {
+	fmt.Sprintln("hi")
   form, err := c.MultipartForm()
   if err != nil {
     return c.Status(fiber.StatusInternalServerError).SendString("Failed to parse form")
   }
-  savePath := "./uploads/upload.zip"
   files := form.File["folder"]
+  file, err := files[0].Open()
+  defer file.Close()
+  fmt.Println(file)
+  savePath := "./uploads/upload.zip"
   dst, err := os.Create(savePath)
-  zipFile, err := files[0].Open()
-  defer zipFile.Close()
-	_, err = io.Copy(dst, zipFile)
   defer dst.Close()
+  f, err := io.Copy(dst, file)
+  fmt.Println(f)
 	return c.JSON(fiber.Map{"status": "success", "message": "uploaded folder"})
+
 }
 
 func GetTtyd(c *fiber.Ctx) error {
