@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"os"
@@ -8,12 +9,16 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/docker/docker/client"
 )
 
 type ContainerInfo struct {
-	id      string
-	port    int
-	session string
+	id         string
+	ip         string
+	port       int
+	session    string
+	open_ports []int
 }
 
 func CreateContainer() *ContainerInfo {
@@ -33,6 +38,16 @@ func CreateContainer() *ContainerInfo {
 		port: port,
 	}
 
+	ctx := context.Background()
+
+	var dockerCli, _ = client.NewClientWithOpts(client.FromEnv)
+	cjson, err := dockerCli.ContainerInspect(ctx, container.id)
+	if err != nil {
+		panic(err)
+	}
+
+	container.ip = cjson.NetworkSettings.IPAddress
+
 	container.SaveNginxConf()
 
 	return container
@@ -47,9 +62,7 @@ type ContainerPool struct {
 
 func NewContainerPool(size int) *ContainerPool {
 	pool := &ContainerPool{
-		items:     []*ContainerInfo{},
-		available: []*ContainerInfo{},
-		size:      size,
+		size: size,
 	}
 
 	pool.AddContainers(size)
@@ -108,7 +121,7 @@ func (pool *ContainerPool) GetContainerById(container_id string) *ContainerInfo 
 	defer pool.mutex.Unlock()
 
 	for _, container := range pool.items {
-		if container.id == container_id {
+		if strings.HasPrefix(container.id, container_id) {
 			return container
 		}
 	}

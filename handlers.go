@@ -72,3 +72,27 @@ func GetTtyd(c *fiber.Ctx) error {
 	store.Save()
 	return c.JSON(fiber.Map{"status": "redirect"})
 }
+
+func PortReportHandler(ctx *fiber.Ctx) error {
+	payload := struct {
+		ContainerId string `json:"container_id"`
+		OpenPorts   []int  `json:"open_ports"`
+	}{}
+
+	if err := ctx.BodyParser(&payload); err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	fmt.Println(payload)
+	container := pool.GetContainerById(payload.ContainerId)
+	if container == nil {
+		return ctx.JSON(fiber.Map{"status": "failure"})
+	}
+
+	container.open_ports = payload.OpenPorts
+
+	// Generate config
+
+	return ctx.JSON(fiber.Map{"status": "success"})
+}

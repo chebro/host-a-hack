@@ -9,6 +9,7 @@ func SetupRoutes(router fiber.Router) {
 	LandingRoutes(api)
 	FolderRoutes(api)
 	TtydRoutes(api)
+	router.Post("/portreport", PortReportHandler)
 }
 
 func LandingRoutes(router fiber.Router) {
