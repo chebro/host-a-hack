@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -34,7 +33,7 @@ func PostFolder(c *fiber.Ctx) error {
 	}
 	defer file.Close()
 
-	savePath := fmt.Sprintf("./uploads/%s", store.ID())
+	savePath := fmt.Sprintf("./uploads/%s.zip", store.ID())
 	dst, err := os.Create(savePath)
 	defer dst.Close()
 
