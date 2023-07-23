@@ -35,9 +35,9 @@ func GetTtyd(c *fiber.Ctx) error {
 		container = pool.GetContainerById(container_id)
 	}
 
-	link := fmt.Sprintf("/ttyd/%s", container.id)
+	redirect := fmt.Sprintf("/ttyd/%s", container.id)
 	c.Status(fiber.StatusFound)
-	c.Append("Location", link)
+	c.Append("Location", redirect)
 
 	store.Save()
 	return c.JSON(fiber.Map{"status": "redirect"})
