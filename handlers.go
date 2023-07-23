@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+  "io"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,6 +17,17 @@ func GetLanding(c *fiber.Ctx) error {
 }
 
 func PostFolder(c *fiber.Ctx) error {
+  form, err := c.MultipartForm()
+  if err != nil {
+    return c.Status(fiber.StatusInternalServerError).SendString("Failed to parse form")
+  }
+  savePath := "./uploads/upload.zip"
+  files := form.File["folder"]
+  dst, err := os.Create(savePath)
+  zipFile, err := files[0].Open()
+  defer zipFile.Close()
+	_, err = io.Copy(dst, zipFile)
+  defer dst.Close()
 	return c.JSON(fiber.Map{"status": "success", "message": "uploaded folder"})
 }
 
