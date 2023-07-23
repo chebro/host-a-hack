@@ -1,6 +1,10 @@
 # Host a Hack
 
-A Hassle free hosting solution for your hackathon projects! [Project link](github.com/chebro/host-a-hack) (https://github.com/chebro/host-a-hack).
+A Hassle free hosting solution for your hackathon projects! 
+
+- Project link: [https://github.com/chebro/host-a-hack](https://github.com/chebro/host-a-hack).
+- Live demo: [https://hostahack.xyz](https://hostahack.xyz)
+- YouTube video: [https://youtube.com/v](https://youtube.com/v)
 
 ### To run
 
@@ -11,7 +15,7 @@ go run .
 
 ## Inspiration
 
-One of the most challenging tasks for a begginer participating in a hackathon is to figure out how to host their hackathon idea. Moving from `localhost:8080` to `mydomain.com` is not an easy task, figuring out how to work with virtual machinces, finding a domain provider and understading the nitty gritties of DNS management. It's all a huge hassle that takes up a significant amount of time that you can otherwise dedicate to developing your product.
+One of the most challenging tasks for a beginner participating in a hackathon is to figure out how to host their hackathon idea. Moving from `localhost:8080` to `mydomain.com` is not an easy task, figuring out how to work with virtual machines, finding a domain provider and understanding the nitty-gritty details of DNS management. It's all a huge hassle that takes up a significant amount of time that you can otherwise dedicate to developing your product.
 
 So we decided to make it easy for out fellow hackers by creating an all in one platform that can do all of this for you.
 
@@ -39,7 +43,7 @@ Our idea was to make it extremely easy for a new user to jump in, so we create a
 ## Challenges we ran into
 
 - The biggest challenge was to figure out a way to make the whole process instantaneous for our users, so we decided to allocate a container pool which is maintained by our server side go program that ensures that there are enough containers available at all times.
-- We faced a huge hurdle while sketching up the solution for generating a weblink for each container, since our reverse proxy has to handle webservers running on every container.
+- We faced a huge hurdle while sketching up the solution for generating a web-link for each container, since our reverse proxy has to handle web-servers running on every container.
 - Not having dedicated front-end engineers in our team made it difficult for us to make an even better and polished user experience.
 
 ## Accomplishments that we're proud of
@@ -49,8 +53,5 @@ Our idea was to make it extremely easy for a new user to jump in, so we create a
 
 ## What's next for Host a Hack
 
-There's a lot of future scope for the project as our supported tech stacks is quite limited. We can definitely make progress in improving our website UI and UX department. We can also add aditional guides for new comers to get used to our platform and how they can leverage it to host multiple projects.
+There's a lot of future scope for the project as our supported tech stacks is quite limited. We can definitely make progress in improving our website UI and UX department. We can also add additional guides for new comers to get used to our platform and how they can leverage it to host multiple projects.
 
-## Built With
-
-golang, nginx, docker, html, css, javascript
