@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide: Hosting a Website on Linode</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1, h2, h3 {
+      color: #007BFF;
+    }
+
+    ol {
+      padding-left: 20px;
+    }
+
+    pre {
+      background-color: #f7f7f7;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+    }
+
+    a {
+      color: #007BFF;
+    }
+  </style>
+</head>
+<body>
+  <h1>Guide: Hosting a Website on a Dedicated Virtual Machine on Linode</h1>
+  <h2>Prerequisites</h2>
+  <ol>
+    <li>An active Linode account.</li>
+    <li>Basic knowledge of the tech stack you choose (Node.js, Python, Golang, or Rust).</li>
+    <li>A code editor for development (e.g., Visual Studio Code).</li>
+  </ol>
+
+  <h2>Step 1: Create a Virtual Machine on Linode</h2>
+  <ol>
+    <li>Sign in to Linode: <a href="https://www.linode.com/" target="_blank">https://www.linode.com/</a>.</li>
+    <li>Click on "Create" > "Linode" > "Add a Linode."</li>
+    <li>Choose the appropriate options:
+      <ul>
+        <li>Linode plan: Select a plan that suits your website's needs.</li>
+        <li>Data center: Choose the data center location closest to your target audience.</li>
+        <li>Linux distribution: Select a distribution based on your preferred tech stack (e.g., Ubuntu for Node.js and Python, etc.).</li>
+        <li>Root password: Set a secure password for your VM.</li>
+      </ul>
+    </li>
+    <li>Click "Create" to deploy the VM.</li>
+  </ol>
+
+  <h2>Step 2: Access your Virtual Machine</h2>
+  <ol>
+    <li>In the Linode Dashboard, go to "Linodes" and select your VM from the list.</li>
+    <li>Click on "Remote Access" > "Launch Lish Console" to access the Linode Shell console.</li>
+  </ol>
+
+  <h2>Step 3: Install Tech Stack Dependencies</h2>
+  <h3>For Node.js:</h3>
+  <pre><code>
+# Update package lists
+sudo apt update
+
+# Install Node.js and npm
+sudo apt install -y nodejs npm
+  </code></pre>
+
+  <h3>For Python:</h3>
+  <pre><code>
+# Update package lists
+sudo apt update
+
+# Install Python and pip
+sudo apt install -y python3 python3-pip
+  </code></pre>
+
+  <h3>For Golang:</h3>
+  <pre><code>
+# Download and install Go
+wget https://golang.org/dl/go1.XX.X.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.XX.X.linux-amd64.tar.gz
+rm go1.XX.X.linux-amd64.tar.gz
+
+# Add Go binaries to PATH (add this to your ~/.profile or ~/.bashrc)
+export PATH=$PATH:/usr/local/go/bin
+  </code></pre>
+
+  <h3>For Rust:</h3>
+  <pre><code>
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Add Rust binaries to PATH (this might be added automatically by the installation)
+source $HOME/.cargo/env
+  </code></pre>
+
+  <h2>Step 4: Deploy your Website</h2>
+  <ol>
+    <li>Upload your website files to the Virtual Machine. You can use SCP or any other method you prefer.</li>
+    <li>Place your website files in the appropriate directory based on the tech stack:
+      <ul>
+        <li>Node.js: Use a folder like <code>/var/www/nodejs</code>.</li>
+        <li>Python: Use a folder like <code>/var/www/python</code>.</li>
+        <li>Golang: Use a folder like <code>/var/www/golang</code>.</li>
+        <li>Rust: Use a folder like <code>/var/www/rust</code>.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2>Step 5: Run your Website</h2>
+  <ol>
+    <li>Navigate to your website directory.</li>
+    <li>Run the web server using the respective commands for each tech stack:</li>
+  </ol>
+
+  <h3>For Node.js:</h3>
+  <pre><code>
+# Install dependencies
+npm install
+
+# Start the server
+node app.js
+  </code></pre>
+
+  <h3>For Python:</h3>
+  <pre><code>
+# Install dependencies (if you have a requirements.txt)
+pip install -r requirements.txt
+
+# Start the server
+python app.py
+  </code></pre>
+
+  <h3>For Golang:</h3>
+  <pre><code>
+# Build and run the Go application
+go run main.go
+  </code></pre>
+
+  <h3>For Rust:</h3>
+  <pre><code>
+# Build and run the Rust application
+cargo run
+  </code></pre>
+
+  <h2>Step 6: Access Your Website</h2>
+  <p>Your website should now be running on the dedicated virtual machine on Linode. Access it using the VM's public IP address.</p>
+  <p>For example:</p>
+  <ul>
+    <li><a href="http://YOUR_VM_PUBLIC_IP/" target="_blank">http://YOUR_VM_PUBLIC_IP/</a></li>
+  </ul>
+
+  <p>Remember to set up proper DNS records and domain configurations for a custom domain.</p>
+
+  <p>Congratulations! You have successfully hosted a website using Node.js, Python, Golang, or Rust on a dedicated virtual machine on Linode. Feel free to explore more advanced configurations and optimizations based on your website's needs. Happy coding!</p>
+</body>
+</html>
+
