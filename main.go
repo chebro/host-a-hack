@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
@@ -9,7 +10,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var pool = NewContainerPool(3)
+var sockPath = "/tmp/hostahack.sock"
+var pool *ContainerPool
 
 func main() {
 	defer pool.DisposeContainerPool()
@@ -26,8 +28,22 @@ func main() {
 
 	app.Static("/", "./public")
 	app.Route("/", SetupRoutes)
-	err := app.Listen(":3000")
+
+	listener, err := net.Listen("unix", sockPath)
 	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer listener.Close()
+
+	if err := os.Chmod(sockPath, 0777); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	pool = NewContainerPool(3)
+
+	if err := app.Listener(listener); err != nil {
 		fmt.Println(err)
 	}
 }

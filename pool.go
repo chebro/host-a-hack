@@ -20,7 +20,7 @@ func CreateContainer() *ContainerInfo {
 	const min_port = 30000
 	const max_port = 60000
 	port := rand.Intn(max_port-min_port) + min_port
-	cmd := exec.Command("docker", "run", "-d", "--rm", "-p", strconv.Itoa(port)+":7681", "hostahack:latest")
+	cmd := exec.Command("docker", "run", "-d", "--rm", "-p", strconv.Itoa(port)+":7681", "-v", sockPath+":/tmp/server.sock", "hostahack:latest")
 	stdout, err := cmd.Output()
 
 	if err != nil {
