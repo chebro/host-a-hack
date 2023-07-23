@@ -14,7 +14,6 @@ var sockPath = "/tmp/hostahack.sock"
 var pool *ContainerPool
 
 func main() {
-	defer pool.DisposeContainerPool()
 
 	app := fiber.New()
 
@@ -42,6 +41,7 @@ func main() {
 	}
 
 	pool = NewContainerPool(3)
+	defer pool.DisposeContainerPool()
 
 	if err := app.Listener(listener); err != nil {
 		fmt.Println(err)
