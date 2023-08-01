@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net"
 	"os"
 	"os/signal"
@@ -32,13 +31,13 @@ func main() {
 
 	listener, err := net.Listen("unix", sockPath)
 	if err != nil {
-		fmt.Println(err)
+		logger.Println(err)
 		return
 	}
 	defer listener.Close()
 
 	if err := os.Chmod(sockPath, 0777); err != nil {
-		fmt.Println(err)
+		logger.Println(err)
 		return
 	}
 
@@ -46,6 +45,6 @@ func main() {
 	defer pool.DisposeContainerPool()
 
 	if err := app.Listener(listener); err != nil {
-		fmt.Println(err)
+		logger.Println(err)
 	}
 }

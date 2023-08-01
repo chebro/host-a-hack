@@ -1,10 +1,25 @@
 # Host a Hack
 
-A Hassle free hosting solution for your hackathon projects! 
+A Hassle free hosting solution for your hackathon projects! Try it at [https://hostahack.xyz](https://hostahack.xyz)
 
-- Project link: [https://github.com/chebro/host-a-hack](https://github.com/chebro/host-a-hack).
-- Live demo: [https://hostahack.xyz](https://hostahack.xyz)
-- YouTube video: [https://youtu.be/9hZKEFFo7jw](https://youtu.be/9hZKEFFo7jw)
+## Run locally
+
+You will need [go](https://go.dev/), [docker](https://www.docker.com/) and [nginx](https://www.nginx.com/) installed.
+
+```bash
+# Clone the repo locally
+git clone https://github.com/chebro/host-a-hack
+cd host-a-hack
+
+# Build the image
+docker build -t hostahack:latest .
+
+# Copy nginx config required to host on a domain. Make changes as required.
+cp nginx.conf /etc/nginx/sites-enabled/hostahack.xyz
+
+# Run the back-end server
+go run .
+```
 
 ## Inspiration
 

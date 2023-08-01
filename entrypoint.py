@@ -11,18 +11,27 @@ def get_open_ports():
     return list(map(int, set(re.findall("(?<=[^:]:)\d+", proc.stdout))))
 
 
-def report_open_ports(open_ports):
+def post_to_server(path, payload):
     try:
         transport = httpx.HTTPTransport(uds="/tmp/server.sock")
         client = httpx.Client(transport=transport)
-        payload = {"container_id": socket.getfqdn(), "open_ports": open_ports}
-        response = client.post(f"http://api/portreport", json=payload)
-        if response.status_code == 200:
-            print("Successfully sent open ports to the server.")
-        else:
-            print(f"Failed to send open ports. Server returned status code: {response.status_code}")
+        return client.post(f"http://api{path}", json=payload)
     except Exception as e:
         print(f"Error sending open ports to the server: {e}")
+
+
+def report_open_ports(open_ports):
+    payload = {"container_id": socket.getfqdn(), "open_ports": open_ports}
+    response = post_to_server("/portreport", payload)
+    if response.status_code == 200:
+        print("Successfully sent open ports to the server.")
+    else:
+        print(f"Failed to send open ports. Server returned status code: {response.status_code}")
+
+
+def report_session_end():
+    payload = {"container_id": socket.getfqdn()}
+    post_to_server("/sessionend", payload)
 
 
 def port_scan(interval=3):
@@ -38,5 +47,6 @@ def port_scan(interval=3):
 
 if __name__ == "__main__":
     print("Hello world")
-    Process(target=port_scan).start()
-    subprocess.run(["ttyd", "-W", "bash"])
+    Process(target=port_scan, daemon=True).start()
+    subprocess.run(["ttyd", "--writable", "--once", "bash"])
+    report_session_end()

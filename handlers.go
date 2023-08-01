@@ -54,23 +54,13 @@ func GetTtyd(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	var container *ContainerInfo
-	if store.Fresh() {
-		container = pool.GetOne()
-		container.session = store.ID()
+	container := pool.GetOne()
+	container.session = store.ID()
 
-		store.Set("container_id", container.id)
-	} else {
-		container_id := store.Get("container_id").(string)
-		container = pool.GetContainerById(container_id)
-	}
-
-	redirect := fmt.Sprintf("/ttyd/%s", container.id)
-	c.Status(fiber.StatusFound)
-	c.Append("Location", redirect)
+	store.Set("container_id", container.id)
 
 	store.Save()
-	return c.JSON(fiber.Map{"status": "redirect"})
+	return c.JSON(fiber.Map{"status": "success", "container_id": container.id})
 }
 
 func PortReportHandler(ctx *fiber.Ctx) error {
@@ -80,11 +70,11 @@ func PortReportHandler(ctx *fiber.Ctx) error {
 	}{}
 
 	if err := ctx.BodyParser(&payload); err != nil {
-		fmt.Println(err)
+		logger.Println(err)
 		return err
 	}
 
-	fmt.Println(payload)
+	logger.Println(payload)
 	container := pool.GetContainerById(payload.ContainerId)
 	if container == nil {
 		return ctx.JSON(fiber.Map{"status": "failure"})
@@ -92,9 +82,22 @@ func PortReportHandler(ctx *fiber.Ctx) error {
 
 	container.open_ports = payload.OpenPorts
 
-	portMap := container.GenerateWebLinkConfig()
+	container.SaveWebLinkNginxConf()
 
-	fmt.Println(portMap)
+	return ctx.JSON(fiber.Map{"status": "success"})
+}
+
+func SessionEndHandler(ctx *fiber.Ctx) error {
+	payload := struct {
+		ContainerId string `json:"container_id"`
+	}{}
+
+	if err := ctx.BodyParser(&payload); err != nil {
+		logger.Println(err)
+		return err
+	}
+
+	pool.RemoveContainerById(payload.ContainerId)
 
 	return ctx.JSON(fiber.Map{"status": "success"})
 }

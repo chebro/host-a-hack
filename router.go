@@ -8,8 +8,9 @@ func SetupRoutes(router fiber.Router) {
 	api := router.Group("/api")
 	LandingRoutes(api)
 	FolderRoutes(api)
-	TtydRoutes(api)
+	router.Get("/allocatettyd", GetTtyd)
 	router.Post("/portreport", PortReportHandler)
+	router.Post("/sessionend", SessionEndHandler)
 }
 
 func LandingRoutes(router fiber.Router) {
@@ -19,9 +20,4 @@ func LandingRoutes(router fiber.Router) {
 func FolderRoutes(router fiber.Router) {
 	folder := router.Group("/folder")
 	folder.Post("/", PostFolder)
-}
-
-func TtydRoutes(router fiber.Router) {
-	ttyd := router.Group("/ttyd")
-	ttyd.Get("/", GetTtyd)
 }

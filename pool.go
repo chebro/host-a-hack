@@ -2,11 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -16,26 +13,20 @@ import (
 type ContainerInfo struct {
 	id         string
 	ip         string
-	port       int
 	session    string
 	open_ports []int
 }
 
 func CreateContainer() *ContainerInfo {
-	const min_port = 30000
-	const max_port = 60000
-	port := rand.Intn(max_port-min_port) + min_port
-	cmd := exec.Command("docker", "run", "-d", "--rm", "-p", strconv.Itoa(port)+":7681", "-v", sockPath+":/tmp/server.sock", "hostahack:latest")
+	cmd := exec.Command("docker", "run", "-d", "--rm", "-v", sockPath+":/tmp/server.sock", "hostahack:latest")
 	stdout, err := cmd.Output()
 
 	if err != nil {
-		fmt.Println(err.Error())
-		panic(err)
+		logger.Fatalln(err)
 	}
 
 	container := &ContainerInfo{
-		id:   strings.TrimSpace(string(stdout)),
-		port: port,
+		id: strings.TrimSpace(string(stdout)),
 	}
 
 	ctx := context.Background()
@@ -80,10 +71,10 @@ func (pool *ContainerPool) DisposeContainerPool() {
 		args = append(args, container.id)
 	}
 
-	fmt.Println("Stopping containers:")
+	logger.Println("Stopping containers")
 	out, err := exec.Command("docker", args...).Output()
 	if err == nil {
-		fmt.Println(string(out))
+		logger.Println(string(out))
 	}
 }
 
@@ -95,7 +86,7 @@ func (pool *ContainerPool) AddContainers(count int) {
 		container := CreateContainer()
 		pool.items = append(pool.items, container)
 		pool.available = append(pool.available, container)
-		fmt.Println("Container added " + container.id)
+		logger.Println("Container added " + container.id)
 	}
 
 	ReloadNginx()
@@ -127,4 +118,15 @@ func (pool *ContainerPool) GetContainerById(container_id string) *ContainerInfo 
 	}
 
 	return nil
+}
+
+func (pool *ContainerPool) RemoveContainerById(container_id string) {
+	for idx, container := range pool.items {
+		if strings.HasPrefix(container.id, container_id) {
+			os.Remove(container.NginxConfPath())
+			pool.items[idx] = pool.items[len(pool.items)-1]
+			pool.items = pool.items[:len(pool.items)-1]
+			return
+		}
+	}
 }

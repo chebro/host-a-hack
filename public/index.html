@@ -324,16 +324,16 @@
             <div class="circle yellow"></div>
             <div class="circle green"></div>
           </div>
-          <iframe src="/api/ttyd" frameborder="0"></iframe>
+          <iframe id="ttyd" frameborder="0"></iframe>
         </div>
         <p class="port-guide">
           Opened a port? Visit it by clicking the links below:
-          <a href="#">80</a>
-          <a href="#">443</a>
-          <a href="#">3000</a>
-          <a href="#">5000</a>
-          <a href="#">8000</a>
-          <a href="#">8080</a>
+          <a href="#" target="_blank">80</a>
+          <a href="#" target="_blank">443</a>
+          <a href="#" target="_blank">3000</a>
+          <a href="#" target="_blank">5000</a>
+          <a href="#" target="_blank">8000</a>
+          <a href="#" target="_blank">8080</a>
         </p>
       </div>
 
@@ -406,36 +406,35 @@
         quantity: 3.0,
       });
 
-      const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(";").shift();
-      };
+      fetch("/allocatettyd")
+        .then((r) => r.json())
+        .then(({ container_id }) => {
+          const ttydIframe = document.getElementById("ttyd");
+          ttydIframe.src = `/ttyd/${container_id}`;
 
-      const generateHash = async (text) => {
-        console.log(text);
-        const encoder = new TextEncoder();
-        const data = encoder.encode(text);
+          const generateHash = async (text) => {
+            console.log(text);
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
 
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 
-        // Convert the hash buffer to a hexadecimal string
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray
-          .map((byte) => byte.toString(16).padStart(2, "0"))
-          .join("");
-      };
+            // Convert the hash buffer to a hexadecimal string
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray
+              .map((byte) => byte.toString(16).padStart(2, "0"))
+              .join("");
+          };
 
-      const populateLinks = () => {
-        const sessionId = getCookie("session_id");
-        console.log(sessionId);
-        document.querySelectorAll(".port-guide a").forEach(async (elem) => {
-          const hash = await generateHash(sessionId + elem.innerText.trim());
-          console.log(elem, hash);
-          elem.href = `http://${hash.substring(0, 10)}.hostahack.xyz/`;
+          // Populate links
+          document.querySelectorAll(".port-guide a").forEach(async (elem) => {
+            const hash = await generateHash(
+              container_id + elem.innerText.trim()
+            );
+            console.log(elem, hash);
+            elem.href = `http://${hash.substring(0, 10)}.hostahack.xyz/`;
+          });
         });
-      };
-      setTimeout(populateLinks, 4444);
     </script>
   </body>
 </html>
