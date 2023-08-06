@@ -275,17 +275,36 @@
       .dropdown:hover .dropbtn {
         background-color: #3e8e41;
       }
-      p.port-guide {
+      div.port-guide {
+        display: flex;
+        gap: 1ch;
+        padding-top: 7px;
+        flex-wrap: wrap;
+      }
+
+      div.port-guide > * {
         line-height: 1.5;
         color: #444;
         font-size: 14px;
-        padding-top: 7px;
+        flex-shrink: 0;
       }
-      .port-guide a {
-        color: #ff512f;
+
+      div.port-guide input {
+        flex-grow: 1;
+        border: none;
+        padding: 0;
+      }
+
+      .port-guide .generated-link {
         opacity: 0.9;
+        transition: filter 0.2s ease;
+        text-decoration-color: #ff512f;
       }
-      .port-guide a:hover {
+      .port-guide .generated-link.invalid {
+        pointer-events: none;
+        filter: grayscale(75%);
+      }
+      .port-guide .generated-link:hover {
         opacity: 1;
       }
 
@@ -352,15 +371,15 @@
           </div>
           <iframe id="ttyd" frameborder="0"></iframe>
         </div>
-        <p class="port-guide">
-          Opened a port? Visit it by clicking the links below:
-          <a href="#" target="_blank">80</a>
-          <a href="#" target="_blank">443</a>
-          <a href="#" target="_blank">3000</a>
-          <a href="#" target="_blank">5000</a>
-          <a href="#" target="_blank">8000</a>
-          <a href="#" target="_blank">8080</a>
-        </p>
+        <div class="port-guide">
+          <label class="desc" for="portnum">Opened a port?</label>
+          <input
+            id="portnum"
+            type="number"
+            placeholder="Type the port number to visit it"
+          />
+          <a class="generated-link gradtext" target="_blank"></a>
+        </div>
       </div>
 
       <div class="step-3 dropdown">
@@ -452,14 +471,36 @@
               .join("");
           };
 
-          // Populate links
-          document.querySelectorAll(".port-guide a").forEach(async (elem) => {
-            const hash = await generateHash(
-              container_id + elem.innerText.trim()
-            );
-            console.log(elem, hash);
-            elem.href = `http://${hash.substring(0, 10)}.hostahack.xyz/`;
-          });
+          const generatePortLink = async (input) => {
+            console.log(input);
+            if (!input) throw new Error("");
+            console.log(/^\d+$/.test(input));
+            if (!/^\d+$/.test(input))
+              throw new Error("Please enter a numeric value for the port");
+            port = +input;
+            if (port <= 0 || port > 65535)
+              throw new Error("Port must be between 1 and 65535");
+            const hash = await generateHash(container_id + port);
+            return hash.substring(0, 10) + ".hostahack.xyz";
+          };
+
+          // Generate link
+          const outputElem = document.querySelector(".generated-link");
+          document
+            .querySelector(".port-guide input")
+            .addEventListener("input", (e) => {
+              console.log(e);
+              generatePortLink(e.target.value)
+                .then((link) => {
+                  outputElem.innerText = link;
+                  outputElem.href = "https://" + link;
+                  outputElem.classList.remove("invalid");
+                })
+                .catch((e) => {
+                  outputElem.innerText = e.message;
+                  outputElem.classList.add("invalid");
+                });
+            });
         });
     </script>
   </body>
