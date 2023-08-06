@@ -21,6 +21,10 @@ cp nginx.conf /etc/nginx/sites-enabled/hostahack.xyz
 go run .
 ```
 
+## Website demo
+
+![Website demo](.github/website-demo.png)
+
 ## Inspiration
 
 One of the most challenging tasks for a beginner participating in a hackathon is to figure out how to host their hackathon idea. Moving from `localhost:8080` to `mydomain.com` is not an easy task, figuring out how to work with virtual machines, finding a domain provider and understanding the nitty-gritty details of DNS management. It's all a huge hassle that takes up a significant amount of time that you can otherwise dedicate to developing your product.
