@@ -22,7 +22,9 @@
       body {
         display: flex;
         justify-content: center;
-        font-family: Inter;
+        font-family: Inter, sans-serif;
+        font-weight: 400;
+        font-style: normal;
         align-items: flex-start;
         overflow-y: scroll;
       }
@@ -79,7 +81,7 @@
         color: #555;
         font-size: 21px;
         font-weight: 500;
-        line-height: 33px;
+        line-height: 1.5;
       }
 
       div.number {
@@ -273,7 +275,8 @@
       .dropdown:hover .dropbtn {
         background-color: #3e8e41;
       }
-      .port-guide {
+      p.port-guide {
+        line-height: 1.5;
         color: #444;
         font-size: 14px;
         padding-top: 7px;
@@ -284,6 +287,29 @@
       }
       .port-guide a:hover {
         opacity: 1;
+      }
+
+      @media screen and (max-width: 600px) {
+        div.main-container {
+          grid-template-columns: 1fr;
+          column-gap: 0;
+          padding: 5vw;
+          row-gap: 3vh;
+        }
+        p.description {
+          font-size: 1rem;
+        }
+        div.num-1,
+        div.num-2,
+        div.num-3,
+        div.step-3 {
+          display: none;
+        }
+        label.upload-btn {
+          height: 45px;
+          width: 250px;
+          font-size: 0.9rem;
+        }
       }
     </style>
   </head>
